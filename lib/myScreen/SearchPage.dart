@@ -190,15 +190,12 @@ class _SearchPageState extends State<SearchPage> {
               ],
             ),
           ),
-          // Image placeholder for the lady in the banner
           Container(
             height: 120,
             width: 100,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(
-                  "https://your-image-url-here.png",
-                ), // Add your asset here
+                image: NetworkImage("https://your-image-url-here.png"),
                 fit: BoxFit.contain,
               ),
             ),

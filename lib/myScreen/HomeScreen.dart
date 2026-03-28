@@ -16,8 +16,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List data = []; // Original data list
-  List filteredData = []; // Filtered data for search
+  List data = [];
+  List filteredData = [];
   List<int> itemCounts = [];
   TextEditingController searchController = TextEditingController();
   ScrollController _scrollController = ScrollController();
@@ -27,10 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List category_list = [];
   int currentIndex = 0;
   int displayedItemCount = 8;
-  final List<String> imageUrls = [
-    'assets/img/1.jpg',
-    // 'assets/img/2.jpg',
-  ];
+  final List<String> imageUrls = ['assets/img/1.jpg'];
 
   String currentPincode = "226021";
   String currentCity = "Kolkata";
@@ -42,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _onloadProductData();
     _scrollController.addListener(_scrollListener);
 
-    // Add listener for search input
     searchController.addListener(() {
       _filterProducts();
     });
@@ -63,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
         isLoading = true;
       });
 
-      await Future.delayed(Duration(seconds: 2)); // Simulating loading time
+      await Future.delayed(Duration(seconds: 2));
 
       setState(() {
         if (itemsToShow + 10 <= data.length) {
@@ -72,7 +68,6 @@ class _HomeScreenState extends State<HomeScreen> {
           itemsToShow = data.length;
         }
 
-        // Update itemCounts for new items
         if (itemCounts.length < itemsToShow) {
           itemCounts.addAll(
             List.generate(itemsToShow - itemCounts.length, (index) => 0),
@@ -84,10 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Sample data ya kisi API se city nikalne ke liye
   String getCityFromPincode(String pincode) {
-    // Aap yahan actual API call bhi kar sakte hain (jaise postalpincode.in)
-    // Abhi ke liye simple logic:
     if (pincode == "226021") return "Lucknow";
     if (pincode == "700001") return "Kolkata";
     return "Unknown City";
@@ -116,9 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         if (response_data != null && response_data['status'] == true) {
           data = response_data['products'];
-          filteredData =
-              data; // Initially filteredData is same as original data
-          // itemCounts = List.generate(itemsToShow, (index) => 0);
+          filteredData = data;
           itemCounts = List.generate(filteredData.length, (index) => 1);
         } else {
           data = [];
@@ -134,12 +124,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Method to filter products based on search query
   void _filterProducts() {
     String query = searchController.text.toLowerCase();
     setState(() {
       if (query.isEmpty) {
-        filteredData = data; // Show original list if search is empty
+        filteredData = data;
       } else {
         filteredData = data.where((product) {
           String prodName = product['prod_name']?.toLowerCase() ?? '';
@@ -150,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _refreshItems() async {
-    await Future.delayed(Duration(seconds: 1)); // For refresh effect
+    await Future.delayed(Duration(seconds: 1));
     setState(() {
       _onloadCategoriesData();
       _onloadProductData();
@@ -158,7 +147,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _addToCartButtonClicked(data, index) async {
-    // print('pack_qty =>  ${data[index]['pack_qty']}');
     final api_data = {
       "product_id": data[index]['id'],
       "prod_variation_id": 0,
@@ -187,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _addToWishlist(int index) async {
     final wishlist_data = {
-      "product_id": filteredData[index]['id'], // filteredData use karo
+      "product_id": filteredData[index]['id'],
       "prod_variation_id": null,
       "quantity": (itemCounts[index] == 0 ? 1 : itemCounts[index]),
     };
@@ -195,13 +183,10 @@ class _HomeScreenState extends State<HomeScreen> {
     await ProductServices.add_to_wishlist(wishlist_data)
         .then((response_data) {
           if (response_data['status'] == true) {
-            // Agar wishlist mein successfully add ho gaya
             setState(() {
-              filteredData[index]['in_wishlist'] =
-                  true; // filteredData update karo
+              filteredData[index]['in_wishlist'] = true;
             });
 
-            // Success SnackBar
             final snackBar = SnackBar(
               content: Text('Your item is added to Wishlist'),
               backgroundColor: primaryColors,
@@ -209,7 +194,6 @@ class _HomeScreenState extends State<HomeScreen> {
             );
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           } else {
-            // Agar pehle se wishlist mein hai
             final snackBar = SnackBar(
               content: Text('Your product is already in Wishlist'),
               backgroundColor: Colors.red,
@@ -219,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         })
         .catchError((errorMessage) {
-          // Error handling
           final snackBar = SnackBar(
             content: Text('Error while adding to Wishlist $errorMessage'),
             backgroundColor: Colors.red,
@@ -234,21 +217,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Keyboard overflow se bachne ke liye
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(
-            context,
-          ).viewInsets.bottom, // Keyboard ke upar dikhega
+          bottom: MediaQuery.of(context).viewInsets.bottom,
           left: 20,
           right: 20,
           top: 20,
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Jitna content utni height
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
@@ -275,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     currentPincode = pinController.text;
                     currentCity = getCityFromPincode(currentPincode);
                   });
-                  Navigator.pop(context); // Close popup
+                  Navigator.pop(context);
                 },
                 child: const Text(
                   "SUBMIT",
@@ -297,115 +278,14 @@ class _HomeScreenState extends State<HomeScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        backgroundColor: const Color(0xFFF1F8E9),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(110),
           child: Container(
-            // Thoda sa light green tint background ke liye
             color: const Color(0xFFF1F8E9),
             child: SafeArea(
               child: Column(
                 children: [
-                  // 1. Top Section: Profile, Refer, Wishlist, Cart
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(
-                  //     horizontal: 15,
-                  //     vertical: 8,
-                  //   ),
-                  //   child: Row(
-                  //     children: [
-                  //       GestureDetector(
-                  //         onTap: () {
-                  //           // ProfilePage par navigate karne ke liye
-                  //           Navigator.push(
-                  //             context,
-                  //             MaterialPageRoute(
-                  //               builder: (context) => ProfilePage(),
-                  //             ), // Aapke profile page ka class name
-                  //           );
-                  //         },
-                  //         child: const Icon(
-                  //           Icons.account_circle,
-                  //           size: 38,
-                  //           color: Color(0xFF2E7D32), // Dark Green Profile
-                  //         ),
-                  //       ),
-                  //       const SizedBox(width: 10),
-                  //       Container(
-                  //         padding: const EdgeInsets.symmetric(
-                  //           horizontal: 10,
-                  //           vertical: 4,
-                  //         ),
-                  //         decoration: BoxDecoration(
-                  //           color: const Color(
-                  //             0xFFC8E6C9,
-                  //           ), // Light Green Capsule
-                  //           borderRadius: BorderRadius.circular(20),
-                  //         ),
-                  //         child: Row(
-                  //           children: [
-                  //             const Icon(
-                  //               Icons.card_giftcard,
-                  //               size: 16,
-                  //               color: Color(0xFF1B5E20),
-                  //             ),
-                  //             const SizedBox(width: 4),
-                  //             InkWell(
-                  //               onTap: () {
-                  //                 // ProfilePage par navigate karne ke liye
-                  //                 Navigator.push(
-                  //                   context,
-                  //                   MaterialPageRoute(
-                  //                     builder: (context) => ProfilePage(),
-                  //                   ), // Aapke profile page ka class name
-                  //                 );
-                  //               },
-                  //               child: const Text(
-                  //                 "Refer and Earn",
-                  //                 style: TextStyle(
-                  //                   color: Color(0xFF1B5E20),
-                  //                   fontSize: 12,
-                  //                   fontWeight: FontWeight.bold,
-                  //                 ),
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       ),
-                  //       const Spacer(),
-                  //       InkWell(
-                  //         onTap: () {
-                  //           // Watchlist ya Wishlist page par bhejne ke liye
-                  //           Navigator.push(
-                  //             context,
-                  //             MaterialPageRoute(
-                  //               builder: (context) => WishlistPage(),
-                  //             ),
-                  //           );
-                  //         },
-                  //         child: const Icon(
-                  //           Icons.favorite_border,
-                  //           color: Color(0xFF2E7D32),
-                  //         ),
-                  //       ),
-                  //       const SizedBox(width: 15),
-                  //       InkWell(
-                  //         onTap: () {
-                  //           // User ko Cart (My Cart) page par bhejne ke liye
-                  //           Navigator.push(
-                  //             context,
-                  //             MaterialPageRoute(
-                  //               builder: (context) => CartScreen(),
-                  //             ),
-                  //           );
-                  //         },
-                  //         child: const Icon(
-                  //           Icons.shopping_cart_outlined,
-                  //           color: Color(0xFF2E7D32),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 15,
@@ -424,30 +304,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         const Spacer(),
                         GestureDetector(
                           onTap: () {
-                            // ProfilePage par navigate karne ke liye
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ProfilePage(),
-                              ), // Aapke profile page ka class name
+                              ),
                             );
                           },
                           child: const Icon(
                             Icons.account_circle,
                             size: 38,
-                            color: Color(0xFF2E7D32), // Dark Green Profile
+                            color: Color(0xFF2E7D32),
                           ),
                         ),
                       ],
                     ),
                   ),
 
-                  // 2. Search Bar Section (Green Border)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: InkWell(
                       onTap: () {
-                        // Pure bar mein kahin bhi click karne par SearchPage par jayega
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -455,9 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       },
-                      borderRadius: BorderRadius.circular(
-                        15,
-                      ), // Splash effect ke liye
+                      borderRadius: BorderRadius.circular(15),
                       child: Container(
                         height: 45,
                         decoration: BoxDecoration(
@@ -473,7 +348,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         child: IgnorePointer(
-                          // IgnorePointer se saare icons aur text click event ko block nahi karenge
                           child: Row(
                             children: [
                               const SizedBox(width: 12),
@@ -543,10 +417,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 3. Address/Delivery Bar Section (Darker Green Tint)
                       InkWell(
-                        onTap: () =>
-                            _showLocationPopup(context), // Popup function call
+                        onTap: () => _showLocationPopup(context),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 18,
@@ -562,7 +434,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                "Delivering to $currentCity - $currentPincode", // Dynamic Text
+                                "Delivering to $currentCity - $currentPincode",
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -580,7 +452,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
 
                       SizedBox(height: 20),
-                      // --- 2-Row Compact Grid ---
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 0),
                         child: SizedBox(
@@ -588,7 +459,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: GridView.builder(
                             scrollDirection: Axis.horizontal,
                             padding: const EdgeInsets.symmetric(horizontal: 15),
-                            // Filtered list nikaal li taaki baar-baar filter na karna pade
                             itemCount:
                                 category_list
                                     .where(
@@ -606,16 +476,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   childAspectRatio: 1.1,
                                 ),
                             itemBuilder: (context, index) {
-                              // --- 1. All Categories (Index 0) ---
                               if (index == 0) {
                                 return InkWell(
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (c) => CategoryPage(
-                                          selectedId: null,
-                                        ), // All ke liye null
+                                        builder: (c) =>
+                                            CategoryPage(selectedId: null),
                                       ),
                                     );
                                   },
@@ -673,7 +541,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               }
 
-                              // --- 2. Regular Categories ---
                               var mainCategories = category_list
                                   .where(
                                     (cat) =>
@@ -686,13 +553,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               return InkWell(
                                 onTap: () {
-                                  // Specific Category click logic
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (c) => CategoryPage(
                                         selectedId: category['id'],
-                                      ), // ID bhej di
+                                      ),
                                     ),
                                   );
                                 },
@@ -774,13 +640,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       SizedBox(height: 10),
 
-                      // Product Grid
                       Column(
                         children: [
                           GridView.builder(
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
-                            // Logic: Jitne items display karne hain ya total data, jo bhi kam ho
                             itemCount: filteredData.length < displayedItemCount
                                 ? filteredData.length
                                 : displayedItemCount,
@@ -788,13 +652,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
-                                  mainAxisSpacing: 20,
-                                  crossAxisSpacing: 16,
-                                  childAspectRatio:
-                                      0.60, // Card ki height adjust karne ke liye
+                                  mainAxisSpacing: 7,
+                                  crossAxisSpacing: 15,
+                                  childAspectRatio: 0.62,
                                 ),
                             itemBuilder: (context, index) {
-                              // Data extraction
                               var product = filteredData[index];
                               double regularPrice =
                                   double.tryParse(
@@ -807,9 +669,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               bool hasDiscount =
                                   salePrice != null && salePrice < regularPrice;
 
-                              return // Purane GestureDetector ki jagah yahan se copy karein:
-                              // Purane GestureDetector/Container ki jagah isse replace karein:
-                              Container(
+                              return Container(
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   border: Border.all(
@@ -834,12 +694,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // --- Image & Wishlist Section ---
                                       Stack(
                                         children: [
                                           AspectRatio(
-                                            aspectRatio:
-                                                1, // Square image container like the photo
+                                            aspectRatio: 1,
                                             child: Container(
                                               width: double.infinity,
                                               color: const Color(0xFFF7F7F7),
@@ -853,7 +711,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ),
                                           ),
-                                          // Wishlist Icon (Top Right)
+
                                           Positioned(
                                             top: 8,
                                             right: 8,
@@ -891,14 +749,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ],
                                       ),
 
-                                      // --- Details Section ---
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            // Product Name
                                             Text(
                                               product['prod_name'] ??
                                                   'Product Name',
@@ -912,7 +768,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             const SizedBox(height: 4),
 
-                                            // Price Row
                                             Row(
                                               children: [
                                                 Text(
@@ -945,21 +800,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                   ),
                                                 ],
-                                                // const Spacer(),
-                                                // // UPI Label like in photo
-                                                // const Text(
-                                                //   "UPI",
-                                                //   style: TextStyle(
-                                                //     fontSize: 10,
-                                                //     fontWeight: FontWeight.bold,
-                                                //     color: Colors.black54,
-                                                //   ),
-                                                // ),
                                               ],
                                             ),
 
                                             const SizedBox(height: 4),
-                                            // Delivery & Rating Row
                                             Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
@@ -977,7 +821,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ),
                                                     ),
                                                     const SizedBox(height: 8),
-                                                    // Rating Badge
                                                     Container(
                                                       padding:
                                                           const EdgeInsets.symmetric(
@@ -1019,7 +862,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ],
                                                 ),
 
-                                                // Add to Cart Button (Action)
                                                 GestureDetector(
                                                   onTap: () =>
                                                       _addToCartButtonClicked(
@@ -1044,7 +886,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                // SizedBox(height: 5),
                                               ],
                                             ),
                                           ],
@@ -1057,7 +898,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
 
-                          // 3. View More / See All Button
                           if (filteredData.length > displayedItemCount)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -1074,8 +914,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    displayedItemCount +=
-                                        8; // Har click pe 8 items badhenge
+                                    displayedItemCount += 8;
                                   });
                                 },
                                 child: Text(

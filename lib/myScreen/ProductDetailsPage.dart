@@ -27,7 +27,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     get_product_details(widget.id);
   }
 
-  // API Call to get product details
   Future<void> get_product_details(id) async {
     setState(() => isRefreshing = true);
     try {
@@ -44,7 +43,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
   }
 
-  // Wishlist Toggle Logic
   void toggleWishlist() {
     setState(() {
       isWishlisted = !isWishlisted;
@@ -55,12 +53,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   void shareProduct() {
-    final String productUrl =
-        "https://yourapp.com/product/${widget.id}"; // Aapka product link
+    final String productUrl = "https://yourapp.com/product/${widget.id}";
     Share.share("Check out this product: $productUrl");
   }
 
-  // Add To Cart Logic
   Future<void> addToCart(
     Map<String, dynamic> productData,
     int selectedQty,
@@ -90,7 +86,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
   }
 
-  // Add To Wishlist Logic
   Future<void> addToWishlist(Map<String, dynamic> productData) async {
     final wishlistData = {
       "product_id": productData['id'],
@@ -121,14 +116,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF1F8E9), // Light Mint Green Background
+        backgroundColor: const Color(0xFFF1F8E9),
         elevation: 0,
         centerTitle: false,
         surfaceTintColor: const Color(0xFFF1F8E9),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
-            color: Color(0xFF2E7D32), // Deep Green Icon
+            color: Color(0xFF2E7D32),
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
@@ -136,20 +131,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         title: const Text(
           "PRODUCT DETAILS",
           style: TextStyle(
-            color: Color(0xFF2E7D32), // Deep Green Text
+            color: Color(0xFF2E7D32),
             fontSize: 16,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.0,
           ),
         ),
         actions: [
-          // Share Icon
           IconButton(
             icon: const Icon(Icons.share_outlined, color: Color(0xFF2E7D32)),
             onPressed: shareProduct,
           ),
 
-          // Simple Cart Icon (Bina dot ke)
           IconButton(
             icon: const Icon(
               Icons.shopping_cart_outlined,
@@ -158,16 +151,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const CartScreen(),
-                ), // Check class name
+                MaterialPageRoute(builder: (context) => const CartScreen()),
               );
             },
           ),
-          const SizedBox(width: 8), // Right side spacing
+          const SizedBox(width: 8),
         ],
 
-        // Halka divider line separation ke liye
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(height: 1.0, color: Colors.green.withOpacity(0.1)),
@@ -179,7 +169,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 1. Image Carousel Section
                   Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
@@ -227,7 +216,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     ],
                   ),
 
-                  // 2. Product Info Section
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -272,7 +260,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ],
                         ),
                         const SizedBox(height: 15),
-                        // Rating Badge
                         Row(
                           children: [
                             Container(
@@ -313,7 +300,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ),
                         const Divider(height: 40),
 
-                        // Delivery Info
                         Row(
                           children: [
                             const Icon(
@@ -343,7 +329,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ),
                         const Divider(height: 40),
 
-                        // Product Description
                         const Text(
                           "Product Details",
                           style: TextStyle(
@@ -362,7 +347,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ),
                         const SizedBox(height: 30),
 
-                        // Reviews Section
                         const Text(
                           "Customer Reviews",
                           style: TextStyle(
@@ -389,7 +373,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               ),
             ),
 
-      // 3. Bottom Bar Buttons
       bottomNavigationBar: Container(
         height: 70,
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),

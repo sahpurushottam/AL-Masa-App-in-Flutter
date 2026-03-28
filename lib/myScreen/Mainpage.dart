@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:ai_masa/myScreen/CartScreen.dart'; // Aapke folder structure ke hisaab se update kiya
+import 'package:ai_masa/myScreen/CartScreen.dart';
 import 'package:ai_masa/myScreen/ProfilePage.dart';
 import 'package:ai_masa/myScreen/WishlistPage.dart';
 import 'package:ai_masa/myScreen/homeScreen.dart';
@@ -45,13 +45,8 @@ class _MainPageState extends State<MainPage> {
       onWillPop: _onWillPop,
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: IndexedStack(
-          // IndexedStack use kiya hai taaki page state save rahe
-          index: _selectedIndex,
-          children: _pages,
-        ),
+        body: IndexedStack(index: _selectedIndex, children: _pages),
 
-        // --- PREMIUM CUSTOM NAVIGATION BAR ---
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -69,8 +64,7 @@ class _MainPageState extends State<MainPage> {
               child: BottomNavigationBar(
                 elevation: 0,
                 backgroundColor: Colors.transparent,
-                type: BottomNavigationBarType
-                    .fixed, // 4 items ke liye fixed best hai
+                type: BottomNavigationBarType.fixed,
                 showSelectedLabels: true,
                 showUnselectedLabels: true,
                 currentIndex: _selectedIndex,
@@ -119,7 +113,6 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  // Custom Item Builder for smooth look
   BottomNavigationBarItem _buildNavItem(
     IconData activeIcon,
     IconData inactiveIcon,

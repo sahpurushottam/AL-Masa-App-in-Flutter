@@ -17,10 +17,8 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
   String selectedMethod = 'Online';
   bool isRefreshing = false;
 
-  // --- DYNAMIC CALCULATIONS ---
   double get _subTotal => widget.orderData['bill_amt'];
 
-  // Image ke hisaab se discounts
   double get _onlineDiscount => widget.orderData['discount_amt'] + 51.0;
   double get _codDiscount => widget.orderData['discount_amt'];
 
@@ -28,7 +26,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
       (selectedMethod == 'Online') ? _onlineDiscount : _codDiscount;
   double get _finalTotal => _subTotal - _currentDiscount;
 
-  // Final Order Confirm API Call
   Future<void> _placeOrder() async {
     setState(() => isRefreshing = true);
 
@@ -82,13 +79,13 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F7),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF1F8E9), // Light Mint Green Background
-        elevation: 0.5, // Halka shadow clean look ke liye
+        backgroundColor: const Color(0xFFF1F8E9),
+        elevation: 0.5,
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
-            color: Color(0xFF2E7D32), // Deep Green Icon
+            color: Color(0xFF2E7D32),
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
@@ -96,24 +93,19 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
         title: const Text(
           'PAYMENT METHOD',
           style: TextStyle(
-            color: Color(0xFF2E7D32), // Deep Green Text
+            color: Color(0xFF2E7D32),
             fontSize: 16,
-            fontWeight: FontWeight.w800, // Modern Bold look
+            fontWeight: FontWeight.w800,
             letterSpacing: 1.0,
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(65), // Stepper space
+          preferredSize: const Size.fromHeight(65),
           child: Column(
             children: [
-              _buildStepper(), // Stepper widget call
+              _buildStepper(),
               const SizedBox(height: 8),
-              Container(
-                color: Colors.green.withOpacity(
-                  0.1,
-                ), // Halka divider separation ke liye
-                height: 1,
-              ),
+              Container(color: Colors.green.withOpacity(0.1), height: 1),
             ],
           ),
         ),
@@ -134,7 +126,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                       ),
                     ),
                   ),
-                  // Cash on Delivery Option
                   _buildPaymentOption(
                     id: 'COD',
                     title: 'Cash on Delivery',
@@ -142,7 +133,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                     icon: Icons.money,
                   ),
                   const SizedBox(height: 10),
-                  // Online Payment Option
                   _buildPaymentOption(
                     id: 'Online',
                     title: 'Pay Online',
@@ -161,7 +151,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
     );
   }
 
-  // 1. UPDATED 4-STEP STEPPER
   Widget _buildStepper() {
     return Container(
       color: Colors.white,

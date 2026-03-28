@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_null_comparison, dead_code
+// ignore_for_file: unnecessary_null_comparison, dead_code, deprecated_member_use
 import 'package:ai_masa/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_masa/Services/product_services.dart';
@@ -34,7 +34,6 @@ class _AddressPageState extends State<AddressPage> {
             if (response_data != null && response_data['status'] == true) {
               addressData_list = response_data['shipping_addresses'];
               isRefreshing = false;
-              // Pehla address default select kar lete hain bina circle ke logic ke liye
               if (addressData_list.isNotEmpty) {
                 _selectedAddress = addressData_list[0];
               }
@@ -49,7 +48,6 @@ class _AddressPageState extends State<AddressPage> {
         });
   }
 
-  // 1. UPDATED 4-STEP STEPPER
   Widget _buildStepper() {
     return Container(
       color: Colors.white,
@@ -137,7 +135,6 @@ class _AddressPageState extends State<AddressPage> {
     );
   }
 
-  // 2. CLEAN ADDRESS HEADER (Bina Circle ke)
   Widget _buildDeliveryAddressHeader() {
     if (_selectedAddress == null) return Container();
     return Container(
@@ -191,13 +188,13 @@ class _AddressPageState extends State<AddressPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF1F8E9), // Light Mint Green Background
+        backgroundColor: const Color(0xFFF1F8E9),
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
-            color: Color(0xFF2E7D32), // Dark Green Icon
+            color: Color(0xFF2E7D32),
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
@@ -205,28 +202,20 @@ class _AddressPageState extends State<AddressPage> {
         title: const Text(
           'ADDRESS SELECTION',
           style: TextStyle(
-            color: Color(0xFF2E7D32), // Dark Green Text
+            color: Color(0xFF2E7D32),
             fontSize: 16,
-            fontWeight: FontWeight.w800, // Extra Bold for modern look
+            fontWeight: FontWeight.w800,
             letterSpacing: 1.2,
           ),
         ),
 
-        // Bottom Line Design
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(
-            75,
-          ), // Stepper ke liye thodi zyada height
+          preferredSize: const Size.fromHeight(75),
           child: Column(
             children: [
-              _buildStepper(), // Aapka stepper widget
+              _buildStepper(),
               const SizedBox(height: 10),
-              Container(
-                color: Colors.green.withOpacity(
-                  0.1,
-                ), // Halka divider line niche
-                height: 1,
-              ),
+              Container(color: Colors.green.withOpacity(0.1), height: 1),
             ],
           ),
         ),
@@ -235,7 +224,6 @@ class _AddressPageState extends State<AddressPage> {
           ? const Center(child: CircularProgressIndicator(color: Colors.blue))
           : Column(
               children: [
-                // _buildStepper(),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -248,7 +236,6 @@ class _AddressPageState extends State<AddressPage> {
                   ),
                 ),
 
-                // BOTTOM BAR - ALWAYS VISIBLE
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,

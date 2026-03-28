@@ -37,13 +37,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return discount;
   }
 
-  // --- UPDATED API CALL LOGIC ---
   void _onConfirmButtonClicked() {
     double billAmount = _calculateSubTotal();
     double discountAmt = _calculateTotalDiscount();
     double netAmt = billAmount - discountAmt;
 
-    // Review se seedha Payment Page par bhej rahe hain
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -53,7 +51,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             'discount_amt': discountAmt,
             'net_amt': netAmt,
             'shipping_address': selectedShippingAddress['id'],
-            'items': GBL_cartItemList, // Saare items list
+            'items': GBL_cartItemList,
           },
         ),
       ),
@@ -378,6 +376,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
             onPressed: _onConfirmButtonClicked,
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColors,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
             ),
             child: const Text(

@@ -89,25 +89,16 @@ class _WishlistPageState extends State<WishlistPage> {
         title: const Text(
           "MY WISHLIST",
           style: TextStyle(
-            color: Color(0xFF2E7D32), // Deep Forest Green
+            color: Color(0xFF2E7D32),
             fontSize: 18,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.2,
           ),
         ),
-        backgroundColor: const Color(0xFFF1F8E9), // Light Mint Green
+        backgroundColor: const Color(0xFFF1F8E9),
         elevation: 0.8,
-        // centerTitle: true,
-        // leading: IconButton(
-        //   icon: const Icon(
-        //     Icons.arrow_back_ios_new,
-        //     color: Color(0xFF2E7D32),
-        //     size: 20,
-        //   ),
-        //   onPressed: () => Navigator.pop(context),
-        // ),
+
         actions: [
-          // 1. Search Icon
           IconButton(
             icon: const Icon(Icons.search_rounded, color: Color(0xFF2E7D32)),
             onPressed: () {
@@ -117,7 +108,6 @@ class _WishlistPageState extends State<WishlistPage> {
               );
             },
           ),
-          // 2. Cart Icon
           IconButton(
             icon: const Icon(
               Icons.shopping_cart_outlined,
@@ -126,32 +116,42 @@ class _WishlistPageState extends State<WishlistPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const CartScreen(),
-                ), // Apne cart page ka class name yahan check kar lena
+                MaterialPageRoute(builder: (context) => const CartScreen()),
               );
             },
           ),
-          const SizedBox(width: 8), // Right side se thoda gap
+          const SizedBox(width: 8),
         ],
       ),
-      body: isRefreshing
-          ? Center(child: CircularProgressIndicator(color: primaryColors))
-          : RefreshIndicator(
-              onRefresh: _fetchWishlistData,
-              color: primaryColors,
-              child: wishlist_data.isEmpty
-                  ? _buildEmptyWishlist()
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: wishlist_data.length,
-                      itemBuilder: (context, index) {
-                        var item = wishlist_data[index];
-                        var product = item['product'];
-                        return _buildWishlistCard(product, item, index);
-                      },
+      body: RefreshIndicator(
+        onRefresh: _fetchWishlistData,
+        color: primaryColors,
+        child: isRefreshing
+            ? Center(child: CircularProgressIndicator(color: primaryColors))
+            : wishlist_data.isEmpty
+            ? LayoutBuilder(
+                builder: (context, constraints) => ListView(
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: _buildEmptyWishlist(),
                     ),
-            ),
+                  ],
+                ),
+              )
+            : ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(12),
+                itemCount: wishlist_data.length,
+                itemBuilder: (context, index) {
+                  var item = wishlist_data[index];
+                  var product = item['product'];
+                  return _buildWishlistCard(product, item, index);
+                },
+              ),
+      ),
     );
   }
 
@@ -187,7 +187,6 @@ class _WishlistPageState extends State<WishlistPage> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Product Image
               Stack(
                 children: [
                   Container(
@@ -208,7 +207,6 @@ class _WishlistPageState extends State<WishlistPage> {
                 ],
               ),
               const SizedBox(width: 15),
-              // Details Section
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,7 +236,6 @@ class _WishlistPageState extends State<WishlistPage> {
                       ],
                     ),
                     const SizedBox(height: 5),
-                    // Price Row
                     Row(
                       children: [
                         Text(
@@ -263,11 +260,9 @@ class _WishlistPageState extends State<WishlistPage> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    // Quantity and Add to Cart Row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Modern Qty Selector
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
@@ -307,7 +302,6 @@ class _WishlistPageState extends State<WishlistPage> {
                             ],
                           ),
                         ),
-                        // Small Add Button
                         ElevatedButton.icon(
                           onPressed: () => _addToCard(product, index, item),
                           icon: const Icon(

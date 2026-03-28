@@ -1,10 +1,13 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:ai_masa/myScreen/CartScreen.dart';
 import 'package:flutter/material.dart';
 import '../Services/product_services.dart';
 import 'ProductDetailsPage.dart';
+import 'WishlistPage.dart';
 
 class CategoryPage extends StatefulWidget {
-  final dynamic selectedId; // Bahar se aane wali ID
+  final dynamic selectedId;
   const CategoryPage({Key? key, this.selectedId}) : super(key: key);
 
   @override
@@ -33,7 +36,6 @@ class _CategoryPageState extends State<CategoryPage> {
         ];
         tempList.addAll(response['category_list']);
 
-        // --- Logic: Agar selectedId aayi hai toh uska index dhoondo ---
         int initialIndex = 0;
         if (widget.selectedId != null) {
           int found = tempList.indexWhere(
@@ -48,7 +50,6 @@ class _CategoryPageState extends State<CategoryPage> {
           isLoadingCategories = false;
         });
 
-        // Wahi products load karo jo select huye hain
         _loadProducts(categoryList[selectedIndex]['id']);
       } else {
         setState(() => isLoadingCategories = false);
@@ -83,16 +84,16 @@ class _CategoryPageState extends State<CategoryPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF1F8E9),
         elevation: 0,
         centerTitle: false,
-        leadingWidth: 40, // Space bachane ke liye
+        leadingWidth: 45,
         leading: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: IconButton(
             icon: const Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: Color(0xFF1A1A1A),
+              color: Color(0xFF2E7D32),
               size: 18,
             ),
             onPressed: () => Navigator.pop(context),
@@ -103,59 +104,59 @@ class _CategoryPageState extends State<CategoryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Categories",
+              "CATEGORIES",
               style: TextStyle(
-                color: Color(0xFF1A1A1A),
-                fontSize: 18,
+                color: Color(0xFF2E7D32),
+                fontSize: 17,
                 fontWeight: FontWeight.w800,
-                letterSpacing: -0.5, // Modern tight look
+                letterSpacing: 0.8,
               ),
             ),
-            // Chota sa sub-text jo premium feel deta hai
             Text(
               "Explore best products",
               style: TextStyle(
-                color: Colors.grey.shade500,
+                color: Colors.green.shade400,
                 fontSize: 11,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
         actions: [
-          // Wishlist Icon with subtle glow/shadow
-          _buildModernActionIcon(
-            icon: Icons.favorite_rounded,
-            iconColor: Colors.pinkAccent,
-            onTap: () {},
+          IconButton(
+            icon: const Icon(Icons.favorite_rounded, color: Color(0xFF2E7D32)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const WishlistPage()),
+              );
+            },
           ),
-          const SizedBox(width: 10),
-          // Shopping Bag with count badge
-          _buildModernCartIcon(),
-          const SizedBox(width: 16),
-        ],
-        // Bottom line ko thoda aur soft kiya hai gradient touch ke saath
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.0),
-          child: Container(
-            height: 1,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white,
-                  Colors.grey.withOpacity(0.2),
-                  Colors.white,
-                ],
-              ),
+
+          IconButton(
+            icon: const Icon(
+              Icons.shopping_cart_outlined,
+              color: Color(0xFF2E7D32),
             ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CartScreen()),
+              );
+            },
           ),
+          const SizedBox(width: 12),
+        ],
+
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1.0),
+          child: Container(height: 1.0, color: Colors.green.withOpacity(0.1)),
         ),
       ),
       body: isLoadingCategories
           ? const Center(child: CircularProgressIndicator(color: Colors.purple))
           : Row(
               children: [
-                // --- Sidebar (Left) ---
                 Container(
                   width: 85,
                   decoration: BoxDecoration(
@@ -245,7 +246,6 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                 ),
 
-                // --- Products Grid (Right) ---
                 Expanded(
                   child: isLoadingProducts
                       ? const Center(
@@ -282,7 +282,6 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 
-  // Helper: Product Card
   Widget _buildProductCard(var product) {
     return InkWell(
       onTap: () => Navigator.push(
@@ -354,57 +353,6 @@ class _CategoryPageState extends State<CategoryPage> {
           ],
         ),
       ),
-    );
-  }
-
-  // 1. Modern Action Icon Helper
-  Widget _buildModernActionIcon({
-    required IconData icon,
-    required Color iconColor,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: iconColor, size: 20),
-      ),
-    );
-  }
-
-  // 2. Modern Cart Icon with Badge
-  Widget _buildModernCartIcon() {
-    return Stack(
-      alignment: Alignment.topRight,
-      children: [
-        InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CartScreen()),
-            );
-          },
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(
-                0xFF673AB7,
-              ).withOpacity(0.08), // Light Purple tint
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.shopping_bag_rounded,
-              color: Colors.purple,
-              size: 20,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

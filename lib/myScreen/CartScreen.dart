@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../Services/product_services.dart';
-import '../global/Global.dart'; // Jahan GBL_cartItemList define hai
-import '../utils/colors.dart'; // Jahan primaryColors define hai
+import '../global/Global.dart';
+import '../utils/colors.dart';
 import 'AddressPage.dart';
 import 'SearchPage.dart';
 import 'WishlistPage.dart';
 
-// Ensure karein ki ye RouteObserver aapki main.dart mein bhi define ho
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class CartScreen extends StatefulWidget {
@@ -22,27 +21,24 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
-    _get_customer_cart(); // Pehli baar load hone par data layega
+    _get_customer_cart();
     _refreshCart();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Screen ko observer ke saath register karna
     routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
   }
 
   @override
   void dispose() {
-    // Memory leaks se bachne ke liye unsubscribe
     routeObserver.unsubscribe(this);
     super.dispose();
   }
 
   @override
   void didPopNext() {
-    // Jab user AddressPage se wapas aayega, cart refresh hoga
     _get_customer_cart();
   }
 
@@ -98,20 +94,15 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
           title: const Text(
             'MY CART',
             style: TextStyle(
-              color: Color(
-                0xFF2E7D32,
-              ), // Deep Forest Green (Behtar contrast ke liye)
-              fontSize: 18, // Thoda bada size
-              fontWeight: FontWeight.w800, // Extra Bold look
+              color: Color(0xFF2E7D32),
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
               letterSpacing: 1.2,
             ),
           ),
-          backgroundColor: const Color(
-            0xFFF1F8E9,
-          ), // Light Mint Green background
-          elevation: 0.8, // Halka sa shadow premium feel ke liye
+          backgroundColor: const Color(0xFFF1F8E9),
+          elevation: 0.8,
           actions: [
-            // Search Icon with subtle padding
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: IconButton(
@@ -128,7 +119,6 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
                 },
               ),
             ),
-            // Wishlist Icon
             Padding(
               padding: const EdgeInsets.only(right: 12.0),
               child: IconButton(
@@ -155,7 +145,6 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
               ? Center(child: CircularProgressIndicator(color: primaryColors))
               : Column(
                   children: [
-                    // --- Stepper Section (Cart -> Review -> Payment) ---
                     _buildStepper(),
 
                     Expanded(
@@ -184,7 +173,6 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
                             ),
                     ),
 
-                    // --- Checkout Bottom Bar ---
                     if (GBL_cartItemList.isNotEmpty) _buildBottomBar(),
                   ],
                 ),
@@ -192,8 +180,6 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
       ),
     );
   }
-
-  // --- UI Components ---
 
   Widget _buildStepper() {
     return Container(
@@ -298,11 +284,8 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Product Image
               ClipRRect(
-                borderRadius: BorderRadius.circular(
-                  8,
-                ), // Thoda zyada rounded modern lagta hai
+                borderRadius: BorderRadius.circular(8),
                 child: Image.network(
                   item['primary_img'],
                   height: 90,
@@ -312,15 +295,12 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
               ),
               const SizedBox(width: 15),
 
-              // 2. Product Details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item['prod_name']
-                          .toString()
-                          .toUpperCase(), // Title uppercase mein clean lagta hai
+                      item['prod_name'].toString().toUpperCase(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -340,11 +320,9 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
                     ),
                     const SizedBox(height: 10),
 
-                    // 3. Price aur Quantity Counter Row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Left side: Qty Label
                         Text(
                           "Qty: ${(double.parse(item['quantity'].toString())).toStringAsFixed(0)}",
                           style: const TextStyle(
@@ -353,7 +331,6 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
                           ),
                         ),
 
-                        // Right side: Compact Green Capsule Counter
                         Container(
                           height: 35,
                           decoration: BoxDecoration(
@@ -433,7 +410,6 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
 
           const Divider(height: 30, thickness: 0.5),
 
-          // 4. Action Buttons (Wishlist & Remove)
           Row(
             children: [
               Expanded(

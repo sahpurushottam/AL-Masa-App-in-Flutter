@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ai_masa/Services/product_services.dart';
 import 'package:ai_masa/myScreen/OrderDetailPage.dart';
 import 'package:ai_masa/utils/colors.dart';
-import 'package:intl/intl.dart'; // Import intl package for date formatting
+import 'package:intl/intl.dart';
 
 class MyOrderPage extends StatefulWidget {
   const MyOrderPage({super.key});
@@ -24,188 +24,188 @@ class _MyOrderPageState extends State<MyOrderPage> {
   }
 
   Future<void> _onFetchOrders() async {
-    await ProductServices.get_my_orders().then((response_data) {
+    try {
+      final response_data = await ProductServices.get_my_orders();
       if (response_data['status'] == true) {
         setState(() {
           ordersData = response_data['orders'];
           isRefreshing = false;
         });
       }
-    });
+    } catch (e) {
+      setState(() => isRefreshing = false);
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    status = status.toLowerCase();
+    if (status.contains('delivered')) return Colors.green;
+    if (status.contains('pending')) return Colors.orange;
+    return Colors.red;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
         title: const Text(
-          'MY ORDERS', // Uppercase for consistency
+          'My Orders',
           style: TextStyle(
-            color: Color(0xFF2E7D32), // Deep Forest Green
-            fontSize: 18,
-            fontWeight: FontWeight.w800, // Modern Bold look
-            letterSpacing: 1.2,
+            color: Color(0xFF1B5E20),
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color(0xFFF1F8E9), // Light Mint Green Background
-        elevation: 0.8, // Halka shadow depth ke liye
+        backgroundColor: Color(0xFFF1F8E9),
+        elevation: 0,
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
-            color: Color(0xFF2E7D32),
-            size: 20,
+            color: Color(0xFF1B5E20),
+            size: 18,
           ),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          // 1. Wishlist Icon
+          IconButton(
+            icon: const Icon(Icons.favorite_outline, color: Color(0xFF1B5E20)),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const WishlistPage()),
+            ),
+          ),
           IconButton(
             icon: const Icon(
-              Icons.favorite_border_rounded,
-              color: Color(0xFF2E7D32),
+              Icons.shopping_bag_outlined,
+              color: Color(0xFF1B5E20),
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const WishlistPage(),
-                ), // Check your class name
-              );
-            },
-          ),
-          // 2. Cart Icon
-          IconButton(
-            icon: const Icon(
-              Icons.shopping_cart_outlined,
-              color: Color(0xFF2E7D32),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CartScreen()),
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CartScreen(),
-                ), // Check your class name
-              );
-            },
           ),
-          const SizedBox(width: 8), // Right side spacing
+          const SizedBox(width: 8),
         ],
-        // Bottom Divider for clean separation
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0),
-          child: Container(height: 1.0, color: Colors.green.withOpacity(0.1)),
-        ),
       ),
       body: isRefreshing
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.green))
+          : ordersData.isEmpty
+          ? _buildEmptyState()
           : ListView.builder(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 10,
+              ),
               itemCount: ordersData.length,
               itemBuilder: (context, index) {
                 final order = ordersData[index];
-
-                // Format the order date to d-MMM-yyyy
-                final DateFormat formatter = DateFormat('d-MMM-yyyy');
+                final DateFormat formatter = DateFormat('dd MMM yyyy');
                 final DateTime orderDate = DateTime.parse(order['order_date']);
                 final String formattedDate = formatter.format(orderDate);
 
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          color: Colors.green.withOpacity(0.05),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Order ID: #${order['id']}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              _statusBadge(order['shipping_status']),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              _orderInfoRow(
+                                Icons.calendar_month_outlined,
+                                'Date',
+                                formattedDate,
+                              ),
+                              const SizedBox(height: 8),
+                              _orderInfoRow(
+                                Icons.payments_outlined,
+                                'Total Amount',
+                                '₹${order['net_amt']}',
+                              ),
+                              const Divider(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Order ID: #${order['id']}',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        '${order['shipping_status']}',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          color:
-                                              order['shipping_status'] ==
-                                                  'Delivered'
-                                              ? Colors.green[600]
-                                              : order['shipping_status'] ==
-                                                    'pending'
-                                              ? Colors.orange
-                                              : Colors.red,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
                                   Text(
-                                    'Order Date: $formattedDate', // Formatted date
-                                    style: const TextStyle(fontSize: 16),
+                                    '${order['customer']['name'] ?? 'Customer'}',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 13,
+                                    ),
                                   ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    'Total Amount: ₹${order['net_amt']}',
-                                    style: const TextStyle(fontSize: 16),
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => OrderDetailPage(
+                                            order: order,
+                                            shippingDetails:
+                                                ordersData[index]['customer'],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Text(
+                                      'Details',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    label: const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
+                                      backgroundColor: primaryColors,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        // Button positioned below the order details
-                        ElevatedButton(
-                          onPressed: () {
-                            // Navigate to OrderDetailPage
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => OrderDetailPage(
-                                  order: order,
-                                  shippingDetails:
-                                      ordersData[index]['customer'],
-                                ),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryColors, // Button color
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize:
-                                MainAxisSize.min, // Fit button width to content
-                            children: [
-                              const Text(
-                                'View Details',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ), // Space between text and icon
-                              const Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
-                              ), // Right arrow icon
                             ],
                           ),
                         ),
@@ -215,6 +215,64 @@ class _MyOrderPageState extends State<MyOrderPage> {
                 );
               },
             ),
+    );
+  }
+
+  Widget _orderInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: Colors.grey[400]),
+        const SizedBox(width: 8),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+        const Spacer(),
+        Text(
+          value,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        ),
+      ],
+    );
+  }
+
+  Widget _statusBadge(String status) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: _getStatusColor(status).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: _getStatusColor(status).withOpacity(0.5),
+          width: 0.5,
+        ),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          color: _getStatusColor(status),
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey[300]),
+          const SizedBox(height: 16),
+          const Text(
+            "No orders found",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

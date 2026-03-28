@@ -6,7 +6,6 @@
 .DS_Store
 .atom/
 .build/
-.lib/Services/
 .buildlog/
 .history
 .svn/
@@ -31,6 +30,7 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
+lib/Services
 /build/
 /coverage/
 

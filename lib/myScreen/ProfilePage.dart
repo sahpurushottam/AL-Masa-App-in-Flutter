@@ -19,15 +19,10 @@ class _ProfilePageState extends State<ProfilePage> {
   bool isRefreshing = true;
   final storage = const FlutterSecureStorage();
 
-  // Define a nice deep green color for the theme
-  static const Color appGreen = Color(0xFF2E7D32); // Adjust as needed
+  static const Color appGreen = Color(0xFF2E7D32);
   static const Color accentGreen = Color(0xFFA5D6A7);
-  static const Color lightMint = Color(
-    0xFFE8F5E9,
-  ); // Halka fresh green background
-  static const Color deepForest = Color(
-    0xFF2D6A4F,
-  ); // Dark green text/icons ke liye
+  static const Color lightMint = Color(0xFFE8F5E9);
+  static const Color deepForest = Color(0xFF2D6A4F);
   static const Color softGreen = Color(0xFF81C784);
 
   @override
@@ -47,10 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  // --- Click Functions for List Items ---
   void _navigateToWishlist() {
-    // print('Wishlist item clicked');
-    // Implement navigation logic here
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => WishlistPage()),
@@ -59,7 +51,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _navigateToMyOrders() {
     print('My Orders item clicked');
-    // Implement navigation logic here
     // Navigator.push(context, MaterialPageRoute(builder: (context) => MyOrderPage()));
   }
 
@@ -103,7 +94,6 @@ class _ProfilePageState extends State<ProfilePage> {
     // Implement logic/navigation here
   }
 
-  // --- Click Functions for Top Action Boxes ---
   void _navigateToHelpCentre() {
     print('Help Centre Box clicked');
     // Implement logic/navigation here
@@ -134,9 +124,8 @@ class _ProfilePageState extends State<ProfilePage> {
         return Container(
           padding: const EdgeInsets.all(20),
           child: Column(
-            mainAxisSize: MainAxisSize.min, // Jitna content utni height
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Top handle bar or Close icon
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -147,7 +136,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               const SizedBox(height: 10),
-              // Message text
               const Text(
                 'Are you sure you want to logout?',
                 style: TextStyle(
@@ -157,10 +145,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               const SizedBox(height: 30),
-              // Buttons Row
               Row(
                 children: [
-                  // Cancel Button
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
@@ -181,14 +167,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(width: 15),
-                  // Logout Button
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
                         await AuthServices.logout().then((response_data) {
                           if (response_data['status']) {
                             storage.delete(key: 'distributor_access_token');
-                            Navigator.pop(context); // Close sheet
+                            Navigator.pop(context);
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -199,12 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(
-                          255,
-                          245,
-                          39,
-                          39,
-                        ), // Purple color from image
+                        backgroundColor: const Color.fromARGB(255, 245, 39, 39),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
@@ -231,29 +211,26 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine the name to display (fallback if API data isn't ready)
     String displayName = isRefreshing
         ? 'Loading...'
         : '${profileDetails['first_name'] ?? 'User'} ${profileDetails['last_name'] ?? ''}';
 
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Light grey background
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         elevation: 0,
-        automaticallyImplyLeading:
-            false, // Account page usually main tab hota hai
-        backgroundColor: const Color(0xFFF1F8E9), // Light Mint Green Background
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color(0xFFF1F8E9),
         title: const Text(
-          'ACCOUNT', // Uppercase for consistency
+          'ACCOUNT',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF2E7D32), // Deep Forest Green
+            color: Color(0xFF2E7D32),
             letterSpacing: 1.2,
           ),
         ),
         actions: [
-          // --- Custom Search Icon ---
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: IconButton(
@@ -271,7 +248,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
 
-          // --- Cart Icon ---
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: IconButton(
@@ -290,15 +266,9 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
 
-        // Niche halki si divider line jo background se match kare
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            height: 1.0,
-            color: Colors.green.withOpacity(
-              0.1,
-            ), // Black line ki jagah soft green divider
-          ),
+          child: Container(height: 1.0, color: Colors.green.withOpacity(0.1)),
         ),
       ),
       body: isRefreshing
@@ -307,10 +277,8 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // --- Profile Info Header Section (API Data) ---
                   _buildProfileHeader(displayName),
 
-                  // --- New Action Box Row (Help Centre / Refer & Earn) ---
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20.0,
@@ -338,7 +306,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
 
-                  // --- List Sections ---
                   _buildSectionHeader('My Payments'),
                   _buildListTileCard(
                     Icons.payment_outlined,
@@ -372,7 +339,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     'Followed Shops',
                     _navigateToFollowedShops,
                     trailing: _buildNewBadge(),
-                  ), // Trailing badge example
+                  ),
 
                   _buildSectionHeader('Others'),
                   _buildListTileCard(
@@ -380,7 +347,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     'Al Masa Balance',
                     () {},
                     trailingText: '₹0',
-                  ), // Trailing text example
+                  ),
                   _buildListTileCard(
                     Icons.business_center_outlined,
                     'Become a Supplier',
@@ -403,7 +370,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     _navigateToLegal,
                   ),
 
-                  // --- Bottom Logout Section (Card style) ---
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10.0,
@@ -430,11 +396,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           Icons.chevron_right,
                           color: Colors.black45,
                         ),
-                      ), // Yahan ListTile khatam hota hai (No children: [])
+                      ),
                     ),
                   ),
 
-                  // --- Bottom Flag Image & Version Text ---
                   _buildBottomFlagImage(),
                   _buildVersionText(),
                 ],
@@ -443,16 +408,10 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // --- UI Helper Widgets ---
-
-  // --- Action Button ko stylish banane ka function ---
   Widget _buildCustomAction(IconData icon, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
-      decoration: BoxDecoration(
-        color: lightMint, // Halka green circle background
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: lightMint, shape: BoxShape.circle),
       child: IconButton(
         icon: Icon(icon, color: deepForest, size: 22),
         onPressed: onTap,
@@ -477,7 +436,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     backgroundColor: Colors.grey[200],
                     child: ClipOval(
                       child: Image.asset(
-                        'assets/img/images.png', // Keep the same asset image
+                        'assets/img/images.png',
                         width: 70,
                         height: 70,
                         fit: BoxFit.cover,
@@ -500,7 +459,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    displayName, // API Data here
+                    displayName,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -508,7 +467,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   SizedBox(height: 5),
-                  // Placeholder below name as in img 1, just a dummy line
+
                   Container(width: 60, height: 1.5, color: Colors.grey[300]),
                 ],
               ),
@@ -517,11 +476,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
           SizedBox(height: 15),
-          Divider(
-            height: 1,
-            thickness: 1,
-            color: Colors.grey[100],
-          ), // Divider below
+          Divider(height: 1, thickness: 1, color: Colors.grey[100]),
         ],
       ),
     );
@@ -566,7 +521,7 @@ class _ProfilePageState extends State<ProfilePage> {
           fontSize: 15,
           fontWeight: FontWeight.bold,
           color: Colors.black,
-        ), // Bold Black
+        ),
       ),
     );
   }
@@ -583,20 +538,15 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Card(
         color: Colors.white,
         elevation: 0.5,
-        margin: EdgeInsets.symmetric(vertical: 0.0), // No vertical margin
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-        ), // Squared for list feel
+        margin: EdgeInsets.symmetric(vertical: 0.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         child: ListTile(
           onTap: onTap,
           leading: Icon(icon, color: Colors.black54, size: 20),
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 15.0,
-            vertical: 0.0,
-          ), // Reduce vertical padding
+          contentPadding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
           minVerticalPadding: 0,
           title: Transform.translate(
-            offset: Offset(-20, 0), // Pull text closer to icon
+            offset: Offset(-20, 0),
             child: Text(
               title,
               style: TextStyle(
@@ -657,7 +607,6 @@ class _ProfilePageState extends State<ProfilePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Flag part (Dummy container with colors)
                 Container(
                   width: 50,
                   height: 30,
@@ -689,7 +638,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 SizedBox(width: 15),
-                // Hands part (Placeholder using Icons)
                 Icon(Icons.thumb_up_alt_outlined, size: 30, color: Colors.blue),
                 SizedBox(width: 10),
                 Icon(Icons.handshake_outlined, size: 30, color: Colors.orange),
