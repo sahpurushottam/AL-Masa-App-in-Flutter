@@ -60,9 +60,10 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
     try {
       var response = await ProductServices.order_confirm(finalApiData);
       if (response['status'] == true) {
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (c) => HomeScreen()),
+          (route) => false,
         );
       }
     } catch (e) {
