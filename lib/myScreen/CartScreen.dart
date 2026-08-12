@@ -191,6 +191,7 @@ class _CartScreenState extends State<CartScreen> with RouteAware {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _stepCircle(Icons.check, true, true),
+
               _stepLine(false),
               _stepCircle(null, false, false, "2"),
               _stepLine(false),

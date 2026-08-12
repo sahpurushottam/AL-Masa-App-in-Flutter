@@ -1,9 +1,9 @@
-import 'package:ai_masa/myScreen/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_masa/Services/product_services.dart';
 import 'package:ai_masa/global/Global.dart';
 
 import '../utils/colors.dart';
+import 'Mainpage.dart';
 
 class PaymentMethodPage extends StatefulWidget {
   final Map orderData;
@@ -44,6 +44,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                 double.parse(item['sale_price'].toString()) > 0)
             ? item['sale_price']
             : item['regular_price'];
+
         return {
           'product_id': item['product_id'],
           'product_name': item['prod_name'],
@@ -62,7 +63,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
       if (response['status'] == true) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (c) => HomeScreen()),
+          MaterialPageRoute(builder: (c) => MainPage()),
           (route) => false,
         );
       }

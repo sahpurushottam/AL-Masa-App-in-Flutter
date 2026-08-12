@@ -3,7 +3,7 @@ import 'package:ai_masa/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_masa/Services/product_services.dart';
 import 'package:ai_masa/global/Global.dart';
-import 'package:ai_masa/myScreen/CheckoutPage.dart';
+import 'package:ai_masa/myScreen/ReviewPage.dart';
 
 class AddressPage extends StatefulWidget {
   @override

@@ -1,8 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:ai_masa/global/Global.dart';
 import 'package:ai_masa/utils/colors.dart';
-
 import 'PaymentMethodPage.dart';
+import 'ProductDetailsPage.dart';
 
 class CheckoutPage extends StatefulWidget {
   @override
@@ -13,7 +15,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   bool isRefreshing = false;
   Map<String, String> selectedShippingAddress = GBL_selectedShippingAddress;
 
-  // --- DYNAMIC CALCULATIONS FOR API ---
+  // --- DYNAMIC CALCULATIONS ---
   double _calculateSubTotal() {
     double total = 0.0;
     for (var item in GBL_cartItemList) {
@@ -67,40 +69,33 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF1F8E9), // Light Mint Green Background
-        elevation: 0.5, // Halka shadow depth ke liye
-        centerTitle: true, // Title start mein hi rakha hai
+        backgroundColor: const Color(0xFFF1F8E9),
+        elevation: 0.5,
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back_ios_new, // Naya rounded icon
-            color: Color(0xFF2E7D32), // Deep Green Icon
+            Icons.arrow_back_ios_new,
+            color: Color(0xFF2E7D32),
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'REVIEW YOUR ORDER',
+          'REVIEW YOUR ORDER', // Page Name Changed
           style: TextStyle(
-            color: Color(0xFF2E7D32), // Deep Green Text
+            color: Color(0xFF2E7D32),
             fontSize: 16,
-            fontWeight: FontWeight.w800, // Modern Bold look
+            fontWeight: FontWeight.w800,
             letterSpacing: 1.0,
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(
-            75,
-          ), // Stepper ke liye thodi zyada height
+          preferredSize: const Size.fromHeight(75),
           child: Column(
             children: [
-              _buildStepper(), // Aapka stepper widget
+              _buildStepper(),
               const SizedBox(height: 10),
-              Container(
-                color: Colors.green.withOpacity(
-                  0.1,
-                ), // Halka divider line niche
-                height: 1,
-              ),
+              Container(color: Colors.green.withOpacity(0.1), height: 1),
             ],
           ),
         ),
@@ -112,9 +107,24 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildAddressSection(),
-                        _buildProductList(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: Text(
+                            'Order Summary:',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green[900],
+                            ),
+                          ),
+                        ),
+                        _buildProductList(), // Updated with Individual Totals
                         _buildPriceDetails(
                           subTotal,
                           totalDiscount,
@@ -130,7 +140,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  // 1. UPDATED 4-STEP STEPPER
+  // --- STEPPER WIDGET ---
   Widget _buildStepper() {
     return Container(
       color: Colors.white,
@@ -142,7 +152,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             children: [
               _stepCircle(Icons.check, true, true),
               _stepLine(true),
-              _stepCircle(Icons.check, true, true, "2"),
+              _stepCircle(Icons.check, true, true),
               _stepLine(true),
               _stepCircle(null, true, false, "3"),
               _stepLine(false),
@@ -218,7 +228,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  // --- REST OF UI (Address, Product, Price) ---
+  // --- ADDRESS SECTION ---
   Widget _buildAddressSection() {
     return Container(
       margin: const EdgeInsets.only(top: 8, bottom: 8),
@@ -261,6 +271,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
+  // --- PRODUCT LIST WITH INDIVIDUAL TOTALS ---
   Widget _buildProductList() {
     return ListView.builder(
       shrinkWrap: true,
@@ -268,51 +279,92 @@ class _CheckoutPageState extends State<CheckoutPage> {
       itemCount: GBL_cartItemList.length,
       itemBuilder: (context, index) {
         var item = GBL_cartItemList[index];
-        return Container(
-          color: Colors.white,
-          padding: const EdgeInsets.all(12),
-          margin: const EdgeInsets.only(bottom: 2),
-          child: Row(
-            children: [
-              Image.network(
-                item['primary_img'],
-                width: 70,
-                height: 80,
-                fit: BoxFit.cover,
+        double price = double.parse(
+          (item['sale_price'] != null &&
+                      double.parse(item['sale_price'].toString()) > 0
+                  ? item['sale_price']
+                  : item['regular_price'])
+              .toString(),
+        );
+        double qty = double.parse(item['quantity'].toString());
+        double itemTotal = price * qty;
+
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ProductDetailsPage(id: (item['product_id']).toString()),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            );
+          },
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(bottom: 2),
+            child: Row(
+              children: [
+                Image.network(
+                  item['primary_img'],
+                  width: 70,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.image_not_supported),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item['prod_name'],
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Price: ₹${price.toStringAsFixed(2)}",
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                      ),
+                      Text(
+                        "Qty: ${item['quantity']}",
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      item['prod_name'],
-                      style: const TextStyle(fontSize: 13),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    const Text(
+                      "Total",
+                      style: TextStyle(fontSize: 11, color: Colors.grey),
                     ),
-                    const SizedBox(height: 5),
                     Text(
-                      "₹${item['sale_price'] ?? item['regular_price']}",
+                      "₹${itemTotal.toStringAsFixed(2)}",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontSize: 14,
+                        color: Colors.black,
                       ),
-                    ),
-                    Text(
-                      "Qty: ${item['quantity']}",
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
     );
   }
 
+  // --- PRICE DETAILS ---
   Widget _buildPriceDetails(double sub, double disc, double total) {
     return Container(
       color: Colors.white,
@@ -358,6 +410,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
+  // --- BOTTOM BAR ---
   Widget _buildBottomBar(double total) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -368,22 +421,39 @@ class _CheckoutPageState extends State<CheckoutPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            "₹${total.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Payable Amount",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              Text(
+                "₹${total.toStringAsFixed(2)}",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+            ],
           ),
           ElevatedButton(
             onPressed: _onConfirmButtonClicked,
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColors,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(8),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
             ),
             child: const Text(
               "Continue",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],

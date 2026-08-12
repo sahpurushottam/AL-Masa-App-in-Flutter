@@ -2,6 +2,7 @@
 
 import 'package:ai_masa/myScreen/AllCategoriesPage.dart';
 import 'package:ai_masa/myScreen/ProfilePage.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import '../Services/product_services.dart';
 import '../utils/colors.dart';
@@ -450,8 +451,64 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: CarouselSlider(
+                              options: CarouselOptions(
+                                height: 130.0,
+                                autoPlay: false,
+                                enlargeCenterPage: false,
+                                viewportFraction: 1.0, // Full-width images
+                                onPageChanged: (index, reason) {
+                                  setState(() {
+                                    currentIndex = index; // Update active slide
+                                  });
+                                },
+                              ),
+                              items: imageUrls.map((imagePath) {
+                                return Builder(
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[300],
+                                      ),
+                                      child: Image.asset(
+                                        imagePath,
+                                        fit: BoxFit.fill,
+                                      ),
+                                    );
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          // Line indicator below slider
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: imageUrls.map((url) {
+                          //     int index = imageUrls.indexOf(url);
+                          //     return Container(
+                          //       width: 30.0, // Width of each line
+                          //       height: 4.0, // Height of the line
+                          //       margin: EdgeInsets.symmetric(horizontal: 4.0),
+                          //       decoration: BoxDecoration(
+                          //         color: currentIndex == index
+                          //             ? Colors
+                          //                   .blue // Highlighted color
+                          //             : Colors.grey[400], // Normal color
+                          //         borderRadius: BorderRadius.circular(2.0),
+                          //       ),
+                          //     );
+                          //   }).toList(),
+                          // ),
+                        ],
+                      ),
 
-                      SizedBox(height: 20),
+                      // SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 0),
                         child: SizedBox(
